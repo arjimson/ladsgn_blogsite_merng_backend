@@ -33,6 +33,10 @@ module.exports = {
             if(body.trim() === ''){
                 throw new Error('Post body must not be empty');
             }
+
+            if(postImagePath.trim === ''){
+                throw new Error('Post Image Path must not be empty');
+            }
             const newPost = new Post({
                 body,
                 postImagePath,
