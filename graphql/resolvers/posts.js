@@ -6,8 +6,6 @@ const path = require('path');
 const Post = require('../../models/Post');
 const checkAuth = require('../../util/check-auth');
 
-
-
 module.exports = {
     Query: {
         async getPosts() {
@@ -32,45 +30,35 @@ module.exports = {
         }
     },
     Mutation: {
-        //  uploadFile: async (_, { file }) => {
-        //     const { createReadStream, filename } = await file;
-        //     await new Promise(res =>
-        //         createReadStream()
-        //             .pipe(createWriteStream(path.join(__dirname, "../../images", filename)))
-        //             .on("close", res)
-        //     );
-
-        //     files.push(filename)
-
-        //     return true;
-        // },
-
-        async createPost(_, { body, postImagePath, file }, context) {
+        async createPost(_, { body, file }, context) {
             const user = checkAuth(context);
-            
-            const { valid, errors } = validatePostInput(body, postImagePath);
+
+            const { createReadStream, filename } = await file;
+
+            const { valid, errors } = validatePostInput(body, filename);
 
             if (!valid) {
                 throw new UserInputError('Errors', { errors });
             }
 
-            const { createReadStream, filename } = await file;
+            const newFilename = Date.now() + filename;
 
             await new Promise(res =>
                 createReadStream()
-                    .pipe(createWriteStream(path.join(__dirname, "../../images", filename)))
+                    .pipe(createWriteStream(path.join(__dirname, "../../images", newFilename)))
                     .on("close", res)
             );
 
             const newPost = new Post({
                 body,
-                postImagePath : filename,
+                postImagePath : newFilename,
                 user: user.id,
                 username: user.username,
                 createdAt: new Date().toISOString()
             });
 
             const post = await newPost.save();
+            
             context.pubsub.publish('NEW_POST', {
                 newPost: post
             })

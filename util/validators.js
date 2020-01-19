@@ -44,10 +44,14 @@ module.exports.validateLoginInput = (username, password) => {
     }
 }
 
-module.exports.validatePostInput = (body, postImagePath) => {
+module.exports.validatePostInput = (body, filename) => {
     const errors = {};
     if (body.trim() === '') {
         errors.body = 'Post body must not be empty';
+    }
+
+    if (!filename) {
+        errors.file = 'Image file must not be empty';
     }
 
     // if (postImagePath === '') {
