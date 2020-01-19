@@ -5,32 +5,32 @@ const config = require('../../config/database');
 const { UserInputError } = require('apollo-server');
 const { validateRegisterInput, validateLoginInput } = require('../../util/validators');
 
-function generateToken(user){
+function generateToken(user) {
     return jwt.sign({
         id: user.id,
         email: user.email,
         username: user.username
-    }, config.secret ,{ expiresIn: '1h' });
+    }, config.secret, { expiresIn: '1h' });
 }
 
 module.exports = {
     Mutation: {
-        async login(_, {username, password}){
-            const {errors, valid} = validateLoginInput(username,password);
-            if(!valid){
-                throw new UserInputError('Errors', {errors});
+        async login(_, { username, password }) {
+            const { errors, valid } = validateLoginInput(username, password);
+            if (!valid) {
+                throw new UserInputError('Errors', { errors });
             }
             const user = await User.findOne({ username });
 
-            if(!user){
+            if (!user) {
                 errors.general = 'User not found';
-                throw new UserInputError('User not found', {errors});
+                throw new UserInputError('User not found', { errors });
             }
 
             const match = await bcrypt.compare(password, user.password);
-            if(!match) {
+            if (!match) {
                 errors.general = 'Wrong credentials';
-                throw new UserInputError('Wrong credentials', {errors});
+                throw new UserInputError('Wrong credentials', { errors });
             }
 
             const token = generateToken(user);
@@ -41,20 +41,19 @@ module.exports = {
                 token
             };
         },
-        async register(_, 
+        async register(_,
             {
                 registerInput: { username, email, password, confirmPassword }
             },
-        ){
-            const {valid, errors} = validateRegisterInput(username, email, password, confirmPassword);
+        ) {
+            const { valid, errors } = validateRegisterInput(username, email, password, confirmPassword);
 
-            if(!valid){
-                throw new UserInputError('Errors', {errors});
+            if (!valid) {
+                throw new UserInputError('Errors', { errors });
             }
 
-
             const user = await User.findOne({ username });
-            if(user){
+            if (user) {
                 throw new UserInputError('Username is taken', {
                     errors: {
                         username: 'This username is taken'
@@ -80,8 +79,8 @@ module.exports = {
             }
         }
 
-        
-        
+
+
     }
 }
 
