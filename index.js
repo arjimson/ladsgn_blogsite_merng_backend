@@ -10,17 +10,19 @@ const pubsub = new PubSub();
 const server = new ApolloServer({
     typeDefs,
     resolvers,
-    context: ({req}) => ({req, pubsub}),
+    context: ({ req }) => ({ req, pubsub }),
 });
 
-const port = 5000;
+const port = process.env.port || 5000;
 const app = express();
 app.use('/assets/post', express.static(path.join(__dirname, './images')));
 server.applyMiddleware({ app });
 
-mongoose.connect(config.database, { useNewUrlParser : true, useUnifiedTopology: true })
+mongoose.connect(config.database, { useNewUrlParser: true, useUnifiedTopology: true })
     .then(() => {
         console.log('MongoDB Connected');
-        console.log(`Server running at port ${port}`);
-        return app.listen({port})
+        return app.listen({ port })
+    })
+    .catch(err => {
+        console.error(err)
     })
