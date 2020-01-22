@@ -13,7 +13,7 @@ const server = new ApolloServer({
     context: ({ req }) => ({ req, pubsub }),
 });
 
-const port = process.env.port || 5000;
+const port = process.env.PORT || 5000;
 const app = express();
 app.use('/assets/post', express.static(path.join(__dirname, './images')));
 server.applyMiddleware({ app });
