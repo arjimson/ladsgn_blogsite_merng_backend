@@ -44,19 +44,17 @@ module.exports.validateLoginInput = (username, password) => {
     }
 }
 
-module.exports.validatePostInput = (body, filename) => {
+module.exports.validatePostInput = (title, body, filename) => {
     const errors = {};
+    if (title.trim() === '') {
+        errors.title = 'Post title must not be empty';
+    }
     if (body.trim() === '') {
         errors.body = 'Post body must not be empty';
     }
-
     if (!filename) {
         errors.file = 'Image file must not be empty';
     }
-
-    // if (postImagePath === '') {
-    //     errors.postImagePath = 'Post Image Path must not be empty';
-    // }
     return {
         errors,
         valid: Object.keys(errors).length < 1

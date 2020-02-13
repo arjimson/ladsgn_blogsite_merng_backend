@@ -30,12 +30,12 @@ module.exports = {
         }
     },
     Mutation: {
-        async createPost(_, { body, file }, context) {
+        async createPost(_, { title, body, file }, context) {
             const user = checkAuth(context);
 
             const { createReadStream, filename } = await file;
 
-            const { valid, errors } = validatePostInput(body, filename);
+            const { valid, errors } = validatePostInput( title, body, filename );
 
             if (!valid) {
                 throw new UserInputError('Errors', { errors });
@@ -51,14 +51,15 @@ module.exports = {
 
             const newPost = new Post({
                 body,
-                postImagePath : newFilename,
+                title,
+                postImagePath: newFilename,
                 user: user.id,
                 username: user.username,
                 createdAt: new Date().toISOString()
             });
 
             const post = await newPost.save();
-            
+
             context.pubsub.publish('NEW_POST', {
                 newPost: post
             })

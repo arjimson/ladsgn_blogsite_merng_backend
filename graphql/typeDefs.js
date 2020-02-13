@@ -5,6 +5,7 @@ module.exports = gql`
 
     type Post{
         id: ID!
+        title: String!
         body: String!
         createdAt: String!
         username: String!
@@ -47,7 +48,7 @@ module.exports = gql`
         # uploadFile(file: Upload!) : Boolean
         register(registerInput: RegisterInput): User!
         login(username: String!, password: String!): User!
-        createPost(body: String!, postImagePath: String, file: Upload!): Post!
+        createPost(title: String!, body: String!, postImagePath: String, file: Upload!): Post!
         deletePost(postId: String!): String!
         createComment(postId: String!, body: String!): Post!
         deleteComment(postId: ID!, commentId: ID!): Post!
